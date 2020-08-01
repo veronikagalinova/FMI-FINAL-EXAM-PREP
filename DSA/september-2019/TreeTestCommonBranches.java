@@ -71,9 +71,12 @@ public class TreeTestCommonBranches {
     private static List<String> findCommonElements(List<String> a, List<String> b) {
         if (a.size() > b.size()) {
             a.retainAll(b);
-        } else {
-            b.retainAll(a);
-        }
-        return a;
+            return a;
+        } 
+        
+        b.retainAll(a);
+        return b;
+        
+        
     }
 }
