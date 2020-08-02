@@ -29,6 +29,10 @@ public class Node<T> {
     public T getData() {
         return data;
     }
+    
+    public boolean isLeaf() {
+        return getChildren().size() == 0;
+    }
 
     public int value() {
         return weight.getValue();
