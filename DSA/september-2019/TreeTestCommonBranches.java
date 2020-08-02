@@ -1,5 +1,9 @@
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class TreeTestCommonBranches {
 
@@ -31,52 +35,60 @@ public class TreeTestCommonBranches {
     }
 
     public static <T> void printTreeDfs(Node<T> node) {
-        System.out.println(node);
+//        System.out.println(node);
         node.getChildren().forEach(child -> printTreeDfs(child));
     }
 
     public static <T> List<String> commonBranches(Node<T> labeledTree, Node<T> u, Node<T> v, int k) {
 
-        List<String> wordsWithSumHalfKNodeU = new ArrayList<>();
-        commonBranchesUtil(u, 0, "", k, wordsWithSumHalfKNodeU);
+        List<Pair<String, Integer>> nodeUWordsVals = new ArrayList<>();
+        commonBranchesUtil(u, 0, "", k, nodeUWordsVals);
 
-        List<String> wordsWithSumHalfKNodeV = new ArrayList<>();
-        commonBranchesUtil(v, 0, "", k, wordsWithSumHalfKNodeV);
+        List<Pair<String, Integer>> nodeVWordsVals = new ArrayList<>();
+        commonBranchesUtil(v, 0, "", k, nodeVWordsVals);
 
-        // TO DO - verify that word can exists more than once
-        // when it exists in the to branches
-        List<String> commonBranches = TreeTestCommonBranches.findCommonElements(wordsWithSumHalfKNodeU,
-                wordsWithSumHalfKNodeV);
-        return commonBranches;
+        return TreeTestCommonBranches.findCommonElements(nodeUWordsVals,
+                nodeVWordsVals, k);
     }
 
-    static <T> void commonBranchesUtil(Node<T> node, int val, String word, int k, List<String> wordsWithSumHalfK) {
+    static <T> void commonBranchesUtil(Node<T> node, int val, String word, int k,
+                                       List<Pair<String, Integer>> nodeWordVal) {
         // start dfs from the given node
         System.out.println(node);
         for (Node<T> child : node.getChildren()) {
             // weight value - add to sum
             // weight label - concat to word
             // !!! in this representation weight of X-Y edge is in node Y
-            commonBranchesUtil(child, val + child.value(), word + child.label(), k, wordsWithSumHalfK);
+            commonBranchesUtil(child, val + child.value(), word + child.label(), k, nodeWordVal);
         }
 
-        if (val == k / 2) {
-            wordsWithSumHalfK.add(word);
+        if (node.isLeaf()) {
+            nodeWordVal.add(new Pair<>(word, val));
+            // if is leaf - reset word and val
+            val = 0;
+            word = "";
         }
-        // if is leaf - reset word and val
-        val = 0;
-        word = "";
+
     }
 
-    private static List<String> findCommonElements(List<String> a, List<String> b) {
+    private static List<String> findCommonElements(List<Pair<String, Integer>> a,
+                                                   List<Pair<String, Integer>> b,
+                                                   int k) {
+
         if (a.size() > b.size()) {
-            a.retainAll(b);
-            return a;
-        } 
-        
-        b.retainAll(a);
-        return b;
-        
-        
+            return b.stream().filter(bElem ->
+                    a.stream().anyMatch(aElem ->
+                            aElem.getKey().equals(bElem.getKey())
+                                    && aElem.getValue() + bElem.getValue() == k))
+                    .map(Pair::getKey)
+                    .collect(Collectors.toList());
+        }
+
+        return a.stream().filter(aElem ->
+                b.stream().anyMatch(bElem ->
+                        aElem.getKey().equals(bElem.getKey())
+                                && aElem.getValue() + bElem.getValue() == k))
+                .map(Pair::getKey)
+                .collect(Collectors.toList());
     }
 }
