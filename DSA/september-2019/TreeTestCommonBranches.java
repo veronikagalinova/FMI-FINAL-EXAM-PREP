@@ -35,7 +35,7 @@ public class TreeTestCommonBranches {
     }
 
     public static <T> void printTreeDfs(Node<T> node) {
-//        System.out.println(node);
+        System.out.println(node);
         node.getChildren().forEach(child -> printTreeDfs(child));
     }
 
@@ -54,7 +54,7 @@ public class TreeTestCommonBranches {
     static <T> void commonBranchesUtil(Node<T> node, int val, String word, int k,
                                        List<Pair<String, Integer>> nodeWordVal) {
         // start dfs from the given node
-        System.out.println(node);
+        // System.out.println(node);
         for (Node<T> child : node.getChildren()) {
             // weight value - add to sum
             // weight label - concat to word
